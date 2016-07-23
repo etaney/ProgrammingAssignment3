@@ -1,0 +1,5 @@
+rankhospital(state, outcome, num){
+  
+  
+  
+}
