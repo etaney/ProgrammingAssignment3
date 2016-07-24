@@ -4,6 +4,7 @@ best <- function(state, outcome){
   ## Read outcome data
   data <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
   usedata <- data.frame(hospital=data[,2], statename=data[,7], HeartAttack=as.numeric(data[,11]), HeartFailure=as.numeric(data[,17]), Pneumonia=as.numeric(data[,23]))
+  usedata[outcome] <- as.numeric(usedata[outcome])
   ##print("I read the data")
   
   

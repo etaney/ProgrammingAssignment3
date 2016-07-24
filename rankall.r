@@ -1,13 +1,18 @@
-rankall <- function( outcome, num="best"){
+rankall <- function(outcome, num="best"){
   
   
   ## Read outcome data
-  data <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
-  usedata <- data.frame(hospital=data[,2], statename=data[,7], HeartAttack=as.numeric(data[,11]), HeartFailure=as.numeric(data[,17]), Pneumonia=as.numeric(data[,23]))
-  states <- unique(usedata$statename)
+  data <- read.csv("outcome-of-care-measures.csv", colClasses = "character", na.string="Not Available", stringsAsFactors=FALSE)
+  usedata <- data.frame(hospital=data[,2], statename=data[,7], HeartAttack=data[,11], HeartFailure=data[,17], Pneumonia=data[,23], stringsAsFactors=FALSE)
+  colnames(usedata) <- c("hospital", "statename", "heart attack", "heart failure", "pneumonia")
+  usedata[,outcome] <- as.numeric(usedata[,outcome])
+  states <- sort(unique(usedata$statename))
   
   if(num=="best"){
-    num <- 1
+    numnum <- 1
+  }
+  if(num != "best" && num !="worst"){
+    numnum <- num
   }
   
   ## Check that state and outcome are valid
@@ -16,40 +21,23 @@ rankall <- function( outcome, num="best"){
   }
   
   i <- 1
-  resultlist <- data.frame(stateid=character(),hospital=character())
+  resultlist <- data.frame(hospital=character(),stateid=character())
  
   while (i <= length(states)){
     
     state <- states[i]
    
-    
     statedata <- usedata[usedata$statename==states[i],]
-  
-    ## Return hospital name in that state with lowest 30-day death rate
-    if(outcome == "heart attack"){
-      statedata <- statedata[!is.na(statedata[,3]),]
+    
+      statedata <- statedata[order(statedata[outcome], statedata$hospital,na.last=NA),]
       if(num == "worst"){
-        num <- length(statedata$hospital)
+        numnum <- nrow(statedata)
       }
-      statedata <- statedata[order(statedata[,3], statedata$hospital),]
-    }
-    if(outcome == "heart failure"){
-      statedata <- statedata[!is.na(statedata[,4]),]
-      if(num == "worst"){
-        num <- length(statedata$hospital)
-      }
-      statedata <- statedata[order(statedata[,4], statedata$hospital),]
-    }
-    if(outcome == "pneumonia"){
-      statedata <- statedata[!is.na(statedata[,5]),]
-      if(num == "worst"){
-        num <- length(statedata$hospital)
-      }
-      statedata <- statedata[order(statedata[,5], statedata$hospital),]
-    }
-    resultitem <- data.frame(stateid=states[i], hospital=statedata[num,1])
-    print(resultitem)
+      resultitem <- data.frame(hospital=statedata[numnum,1],stateid=states[i])
+   
+
     resultlist <- rbind(resultlist, resultitem)
+    
     i <- i+1
   }
   return(resultlist)

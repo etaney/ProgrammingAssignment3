@@ -18,12 +18,13 @@ rankhospital <- function(state, outcome, num){
   }
   
   statedata <- usedata[usedata$statename==state,]
+  statedata <- statedata[!is.na(statedata$hospital),]
   
   ## Return hospital name in that state with lowest 30-day death rate
   if(outcome == "heart attack"){
     statedata <- statedata[!is.na(statedata[,3]),]
     if(num == "worst"){
-      num <- length(statedata$hospital)
+      num <- nrow(statedata)
     }
     statedata <- statedata[order(statedata[,3], statedata$hospital),]
     return(statedata[num,1])
@@ -31,7 +32,7 @@ rankhospital <- function(state, outcome, num){
   if(outcome == "heart failure"){
     statedata <- statedata[!is.na(statedata[,4]),]
     if(num == "worst"){
-      num <- length(statedata$hospital)
+      num <- nrow(statedata)
     }
     statedata <- statedata[order(statedata[,4], statedata$hospital),]
     return(statedata[num,1])
@@ -39,7 +40,7 @@ rankhospital <- function(state, outcome, num){
   if(outcome == "pneumonia"){
     statedata <- statedata[!is.na(statedata[,5]),]
     if(num == "worst"){
-      num <- length(statedata$hospital)
+      num <- nrow(statedata)
     }
     statedata <- statedata[order(statedata[,5], statedata$hospital),]
     return(statedata[num,1])
